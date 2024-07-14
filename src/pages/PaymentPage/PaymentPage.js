@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Modal, Radio } from "antd";
+import { Modal, Radio, Table } from "antd";
 import "./PaymentPage.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { UseMutationHooks } from "../../hooks/UseMutationHook";
 import * as OrderService from "../../services/OrderService";
 import { toast } from "react-toastify";
 import LoadingComponent from "../../components/LoadingComponent/LoadingComponent";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 import {
   clearPurchasedProducts,
   clearOrder,
-  clearCart,
 } from "../../redux/counter/orderSlice";
 
 const PaymentPage = () => {
@@ -21,7 +22,9 @@ const PaymentPage = () => {
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [payment, setPaymentMethod] = useState("cash");
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const dispatch = useDispatch();
+
   const handlePayment = () => {
     setIsLoading(true);
     mutationAddOder.mutate({
@@ -35,10 +38,11 @@ const PaymentPage = () => {
       user: user?.id,
     });
   };
-  console.log("duex liệu paymen", selectedProducts)
+
   const toggleShowAllProducts = () => {
     setShowAllProducts((prevState) => !prevState);
   };
+
   const mutationAddOder = UseMutationHooks(async (data) => {
     const { id, token, ...rests } = data;
     try {
@@ -56,6 +60,79 @@ const PaymentPage = () => {
     }
   });
 
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+    generateInvoice();
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const generateInvoice = () => {
+    const input = document.getElementById("invoice-content");
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "pt", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const margin = 40; 
+      const contentWidth = pdfWidth - margin * 2;
+      const contentHeight = pdfHeight - margin * 2;
+      const scaleFactor = Math.min(
+        contentWidth / imgWidth,
+        contentHeight / imgHeight
+      );
+      const imgX = (pdfWidth - imgWidth * scaleFactor) / 2;
+      const imgY = (pdfHeight - imgHeight * scaleFactor) / 2;
+      pdf.addImage(
+        imgData,
+        "PNG",
+        imgX,
+        imgY,
+        imgWidth * scaleFactor,
+        imgHeight * scaleFactor
+      );
+      pdf.save(`invoice_${user.name}.pdf`);
+    });
+  };
+
+  const columns = [
+    {
+      title: "STT",
+      dataIndex: "key",
+      key: "key",
+    },
+    {
+      title: "Tên sản phẩm",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "amount",
+      key: "amount",
+    },
+    {
+      title: "Giá tiền",
+      dataIndex: "price",
+      key: "price",
+    },
+  ];
+
+  const data = selectedProducts.map((product, index) => ({
+    key: index + 1,
+    name: product.name,
+    amount: product.amount,
+    price: `${product.price.toLocaleString()}đ`,
+  }));
+
   return (
     <div>
       {isLoading && <LoadingComponent />}
@@ -70,7 +147,7 @@ const PaymentPage = () => {
                 <p className="title">Thông tin thanh toán</p>
               </div>
             </div>
-            <div className="payment-body">
+            <div className="payment-body" id="invoice">
               {selectedProducts
                 .slice(0, showAllProducts ? selectedProducts.length : 1)
                 .map((product) => {
@@ -178,7 +255,7 @@ const PaymentPage = () => {
                     </div>
                     <div className="info-row">
                       <p className="title-info">Địa chỉ:</p>
-                      <p style={{marginLeft: 15 }}>{user.address}</p>
+                      <p style={{ marginLeft: 15 }}>{user.address}</p>
                     </div>
                   </div>
                 </div>
@@ -223,10 +300,44 @@ const PaymentPage = () => {
                   Tiếp tục
                 </button>
               </div>
+              <div className="btn-invoice mt-2">
+                <button
+                  onClick={showModal}
+                  className="button__go-next btn d-flex flex-column justify-content-center align-items-center w-100"
+                >
+                  In Hóa Đơn
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <Modal
+        title="Hóa đơn mua hàng"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Tải xuống"
+        cancelText="Đóng"
+      >
+        <div id="invoice-content" style={{ padding: "20px" }}>
+          <p>Tên cửa hàng: Cửa hàng thời trang Egamen</p>
+          <h2 style={{ textAlign: "center" }}>
+            <strong>HÓA ĐƠN MUA HÀNG</strong>
+          </h2>
+          <p>Họ Tên: {user.name}</p>
+          <p>Số điện thoại: {user.phone}</p>
+          <p>Email: {user.email}</p>
+          <p>Địa chỉ: {user.address}</p>
+          <Table columns={columns} dataSource={data} pagination={false} />
+          <p style={{ fontWeight: 600, marginTop: 20 }}>
+            Tổng tiền cần thanh toán: {total}
+          </p>
+          <p style={{ textAlign: "center", marginTop: 20 }}>
+            Xin chân thành cảm ơn quý khách!
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 };

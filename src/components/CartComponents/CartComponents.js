@@ -39,22 +39,6 @@ const CartComponents = (props) => {
 
   const isProductsPage = location.pathname === "/products";
 
-  const handleAddCart = () => {
-    dispatch(
-      addOrderProduct({
-        orderItem: {
-          name,
-          amount: 1,
-          image: image,
-          price,
-          product: id,
-          original_price,
-        },
-      })
-    );
-    toast.success("Sản phẩm đã được thêm vào giỏ hàng");
-  };
-
   if (!isValidObjectId(id)) {
     console.error("Invalid product ID:", id);
     return null;

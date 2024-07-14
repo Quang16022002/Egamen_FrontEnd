@@ -3,8 +3,6 @@ import "./HomePage.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import CartComponents from "../../components/CartComponents/CartComponents";
-import { Link } from "react-router-dom";
-import FooterComponent from "../../components/FooterComponent/FooterComponent";
 import HomeSlider from "../../components/HomeSlider/HomeSlider";
 import * as ProductService from "../../services/ProductService";
 import { useQuery } from "@tanstack/react-query";
@@ -218,7 +216,7 @@ const HomePage = () => {
                   original_price={product.original_price}
                   size={product.size}
                   color={product.color}
-                  
+                  isFavorite={product.isFavorite}
                 />
               );
             })}
