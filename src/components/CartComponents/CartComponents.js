@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import "./CartComponents.scss";
 import { Link, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { addOrderProduct } from "../../redux/counter/orderSlice";
 import { toast } from "react-toastify";
 import QuickViewComponent from "../QuickViewComponent/QuickViewComponent";
+import * as ProductService from "../../services/ProductService";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleFavorite } from "../../redux/counter/favoriteSlice";
 
 const CartComponents = (props) => {
   const [isQuickViewVisible, setQuickViewVisible] = useState(false);
@@ -20,9 +21,11 @@ const CartComponents = (props) => {
     original_price,
     size,
     color,
+    isFavorite, // Thêm isFavorite vào props
   } = props;
   const dispatch = useDispatch();
   const location = useLocation();
+  const [favorite, setFavorite] = useState(isFavorite); // Sử dụng state để quản lý isFavorite
 
   const isValidObjectId = (id) => {
     return /^[a-fA-F0-9]{24}$/.test(id);
@@ -50,6 +53,19 @@ const CartComponents = (props) => {
 
   const closeQuickView = () => {
     setQuickViewVisible(false);
+  };
+
+  const handleFavoriteToggle = async () => {
+    try {
+      const updatedProduct = { isFavorite: !favorite };
+      await ProductService.updateProduct(id, updatedProduct);
+      setFavorite(!favorite); // Cập nhật trạng thái isFavorite trên client
+      dispatch(toggleFavorite(props)); // Cập nhật trạng thái yêu thích trong Redux
+      toast.success(`Sản phẩm đã được ${!favorite ? "thêm vào" : "bỏ khỏi"} danh sách yêu thích`);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật sản phẩm yêu thích:", error);
+      toast.error("Có lỗi xảy ra, vui lòng thử lại sau");
+    }
   };
 
   return (
@@ -87,8 +103,9 @@ const CartComponents = (props) => {
           <div className="cart-footer">
             <div className="cart-footer-start">{renderRatingStars()}</div>
             <div className="cart-footer-favourite">
-              <p style={{ textTransform: "none" }}>
-                Yêu thích <i className="fa-regular fa-heart"></i>
+              <p style={{ textTransform: "none", cursor: "pointer" }} onClick={handleFavoriteToggle}>
+                Yêu thích{" "}
+                <i className={`fa-heart ${favorite ? "fa-solid" : "fa-regular"}`}></i>
               </p>
             </div>
           </div>
@@ -108,6 +125,7 @@ const CartComponents = (props) => {
             original_price,
             size,
             color,
+            isFavorite, // Thêm isFavorite vào product
           }}
           onClose={closeQuickView}
         />
