@@ -1,22 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import * as ProductService from '../../services/ProductService';
-import './ProductDetailComponent.scss';
-import FooterComponent from '../FooterComponent/FooterComponent';
-import { toast } from 'react-toastify';
-import { useDispatch, useSelector } from 'react-redux';
-import { addOrderProduct } from '../../redux/counter/orderSlice';
-import { Radio, Checkbox } from 'antd';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import * as ProductService from "../../services/ProductService";
+import "./ProductDetailComponent.scss";
+import FooterComponent from "../FooterComponent/FooterComponent";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { addOrderProduct } from "../../redux/counter/orderSlice";
 
 const ProductDetailComponent = () => {
   const { id } = useParams(); // Lấy tham số id từ URL
   const [product, setProduct] = useState(null);
-  const [largeImage, setLargeImage] = useState('');
-  const [selectedImage, setSelectedImage] = useState('');
+  const [largeImage, setLargeImage] = useState("");
+  const [selectedImage, setSelectedImage] = useState("");
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState('');
-  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -28,8 +27,8 @@ const ProductDetailComponent = () => {
       setLargeImage(response.data.image[0]);
       setSelectedImage(response.data.image[0]);
     } catch (error) {
-      console.error('Lỗi khi lấy chi tiết sản phẩm:', error);
-      setError('Có lỗi xảy ra khi lấy chi tiết sản phẩm.');
+      console.error("Lỗi khi lấy chi tiết sản phẩm:", error);
+      setError("Có lỗi xảy ra khi lấy chi tiết sản phẩm.");
     }
   };
 
@@ -47,18 +46,19 @@ const ProductDetailComponent = () => {
   };
 
   const handleAddOrderProduct = () => {
-    if (!user) { // Kiểm tra trạng thái đăng nhập
-      toast.error('Vui lòng đăng nhập để mua sản phẩm');
+    if (!user) {
+      // Kiểm tra trạng thái đăng nhập
+      toast.error("Vui lòng đăng nhập để mua sản phẩm");
       return;
     }
 
     if (quantity > product.countInStock) {
-      toast.error('Số lượng sản phẩm vượt quá số lượng trong kho');
+      toast.error("Số lượng sản phẩm vượt quá số lượng trong kho");
       return;
     }
 
     if (product.countInStock === 0) {
-      toast.error('Sản phẩm đã hết hàng');
+      toast.error("Sản phẩm đã hết hàng");
       return;
     }
     const orderData = {
@@ -71,24 +71,24 @@ const ProductDetailComponent = () => {
         original_price: product?.original_price,
         selectedColor,
         selectedSize,
-      }
+      },
     };
-    console.log('Order Data:', orderData);
+    console.log("Order Data:", orderData);
 
     // Kiểm tra dữ liệu trước khi dispatch
     if (!selectedColor) {
-      toast.error('Vui lòng chọn màu sắc');
+      toast.error("Vui lòng chọn màu sắc");
       return;
     }
 
     if (!selectedSize) {
-      toast.error('Vui lòng chọn kích thước');
+      toast.error("Vui lòng chọn kích thước");
       return;
     }
 
     dispatch(addOrderProduct(orderData));
 
-    toast.success('Sản phẩm đã được thêm vào giỏ hàng');
+    toast.success("Sản phẩm đã được thêm vào giỏ hàng");
   };
 
   if (error) {
@@ -101,7 +101,7 @@ const ProductDetailComponent = () => {
 
   return (
     <div>
-      <div className="product-detail ">
+      <div className="product-detail">
         <div className="container mb-5">
           <div className="row product_inner">
             <div className="col-lg-6 product_inner-left">
@@ -116,7 +116,7 @@ const ProductDetailComponent = () => {
                         setLargeImage(imageUrl);
                         setSelectedImage(imageUrl);
                       }}
-                      className={selectedImage === imageUrl ? 'selected' : ''}
+                      className={selectedImage === imageUrl ? "selected" : ""}
                     />
                   </li>
                 ))}
@@ -125,51 +125,82 @@ const ProductDetailComponent = () => {
             <div className="col-lg-5 offset-lg-1">
               <div className="product_text">
                 <h3>{product.name}</h3>
-                <div className='d-flex'>
+                <div className="d-flex">
                   <h2>
                     {product.price.toLocaleString()} <span>VND</span>
                   </h2>
-                  <del style={{ marginLeft: 10, fontWeight: 600, color: '#707070' }}>
+                  <del
+                    style={{
+                      marginLeft: 10,
+                      fontWeight: 600,
+                      color: "#707070",
+                    }}
+                  >
                     {product.original_price.toLocaleString()} <span>VND</span>
                   </del>
                 </div>
                 <ul className="list">
                   <li>
-                    <span style={{ color: '#555555' }}>Danh mục</span>: {product.type}
+                    <span style={{ color: "#555555" }}>Danh mục</span>:{" "}
+                    <span style={{ color: "blue" }}>{product.type}</span>
                   </li>
                   <li>
-                    <span>Tình trạng</span>: {product.countInStock > 0 ? 'Còn hàng' : 'Hết hàng'}
-                  </li>
-                  <li className='mt-3'>
-                    <p style={{ padding: 0 }} className='color'>Màu sắc</p>
-                    <Radio.Group
-                      onChange={(e) => setSelectedColor(e.target.value)}
-                      value={selectedColor}
+                    <span>Tình trạng</span>:{" "}
+                    <span
+                      style={{
+                        color: product.countInStock > 0 ? "blue" : "red",
+                      }}
                     >
-                      {product?.color.map((colors, index) => (
-                        <Radio key={index} value={colors}>
-                          {colors}
-                        </Radio>
-                      ))}
-                    </Radio.Group>
+                      {product.countInStock > 0 ? "Còn hàng" : "Hết hàng"}
+                    </span>
                   </li>
-                  <li className='mt-3'>
-                    <p style={{ padding: 0 }} className='color'>Kích thước</p>
-                    <Radio.Group
-                      onChange={(e) => setSelectedSize(e.target.value)}
-                      value={selectedSize}
-                    >
-                      {product?.size.map((sizes, a) => (
-                        <Radio key={a} value={sizes}>
-                          {sizes}
-                        </Radio>
-                      ))}
-                    </Radio.Group>
+                  <li className="mt-3 d-flex align-items-center">
+                    <p style={{ padding: 0 }} className="color">
+                      Màu sắc:{" "}
+                      <span className="selected-color-name">
+                        {selectedColor}
+                      </span>
+                    </p>
+                  </li>
+                  <li className="color-options mt-2">
+                    {product?.color.map((color, index) => (
+                      <div
+                        key={index}
+                        className={`color-option ${
+                          selectedColor === color ? "selected" : ""
+                        }`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => setSelectedColor(color)}
+                      >
+                        {color}
+                      </div>
+                    ))}
+                  </li>
+                  <li className="mt-3 d-flex align-items-center">
+                    <p style={{ padding: 0 }} className="size">
+                      Kích thước:{" "}
+                      <span className="selected-size-name">{selectedSize}</span>
+                    </p>
+                  </li>
+                  <li className="size-options mt-2">
+                    {product?.size.map((size, index) => (
+                      <div
+                        key={index}
+                        className={`size-option ${
+                          selectedSize === size ? "selected" : ""
+                        }`}
+                        onClick={() => setSelectedSize(size)}
+                      >
+                        {size}
+                      </div>
+                    ))}
                   </li>
                 </ul>
                 <p>{product.description}</p>
                 <div className="product_count">
-                  <label className="label" htmlFor="qty">Số lượng:</label>
+                  <label className="label" htmlFor="qty">
+                    Số lượng:
+                  </label>
                   <button onClick={() => handleQuantityChange(1)}>
                     <i className="fa-solid fa-chevron-up"></i>
                   </button>
@@ -188,9 +219,19 @@ const ProductDetailComponent = () => {
                   </button>
                 </div>
                 <div className="card_area">
-                  <a onClick={handleAddOrderProduct} className="main_btn" href="#">Thêm giỏ hàng</a>
-                  <a className="icon_btn" href="#"><i className="fa-regular fa-gem"></i></a>
-                  <a className="icon_btn" href="#"><i className="fa-regular fa-heart"></i></a>
+                  {product.countInStock > 0 ? (
+                    <a
+                      onClick={handleAddOrderProduct}
+                      className="main_btn"
+                      href="#"
+                    >
+                      Thêm giỏ hàng
+                    </a>
+                  ) : (
+                    <a className="main_btn disabled" href="#">
+                      Sản phẩm tạm thời hết hàng
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

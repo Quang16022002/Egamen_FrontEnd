@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import FooterComponent from "../../components/FooterComponent/FooterComponent";
 import * as ProductService from "../../services/ProductService";
 import { useQuery } from "@tanstack/react-query";
 import "./ProductsPage.scss";

@@ -11,7 +11,6 @@ import { Modal } from "antd";
 
 const CartPage = () => {
   const order = useSelector((state) => state.order);
-  console.log("dữ liệu", order);
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [selectAll, setSelectAll] = useState(false);

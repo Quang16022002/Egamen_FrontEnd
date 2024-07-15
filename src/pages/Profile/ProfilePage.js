@@ -15,11 +15,11 @@ const ProfilePage = () => {
   const [name, setName] = useState(user?.name || "");
   const [nickname, setNickName] = useState(user?.nickname || "");
   const [phone, setPhone] = useState(user?.phone || "");
-  const [specificAddress, setSpecificAddress] = useState(""); // Thêm ô địa chỉ cụ thể
+  const [specificAddress, setSpecificAddress] = useState("");
   const [address, setAddress] = useState(user?.address || "");
   const [avatar, setAvatar] = useState(user?.avatar || "");
   const [gender, setGender] = useState(user?.gender || "");
-  const [dob, setDob] = useState(user?.dob || ""); // Thêm state cho ngày sinh
+  const [dob, setDob] = useState(user?.dob || "");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [errors, setErrors] = useState({});
@@ -29,6 +29,7 @@ const ProfilePage = () => {
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
+  const [isEditing, setIsEditing] = useState(false); // Thêm state isEditing
   const dispatch = useDispatch();
   const mutation = UseMutationHooks((data) => {
     const { id, access_token, ...rests } = data;
@@ -247,7 +248,7 @@ const ProfilePage = () => {
         address: fullAddress,
         avatar: avatarBase64 || user?.avatar,
         gender,
-        dob, // Thêm ngày sinh vào dữ liệu người dùng
+        dob,
         access_token: user?.access_token,
       };
 
@@ -259,6 +260,7 @@ const ProfilePage = () => {
         );
         await handleGetDetailsUser(user?.id, user?.access_token);
         toast.success("Cập nhật thông tin thành công!");
+        setIsEditing(false); // Thoát trạng thái chỉnh sửa sau khi lưu
       } catch (error) {
         console.error("Có lỗi xảy ra khi cập nhật người dùng:", error);
       } finally {
@@ -267,6 +269,10 @@ const ProfilePage = () => {
     } else {
       toast.error("Vui lòng kiểm tra lại thông tin nhập vào");
     }
+  };
+
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
   };
 
   return (
@@ -294,9 +300,19 @@ const ProfilePage = () => {
           <div className="container d-flex justify-content-center align-items-center">
             <div className="col-lg-6 profile-account">
               <div className="row profile-account">
-                <div style={{ fontSize: 20 }}>
+                <div className="profile-header" style={{ fontSize: 20 }}>
                   Thông tin tài khoản của <strong>{name}</strong>
+                  <div className="button-container">
+                    <button
+                      className="edit-button"
+                      onClick={handleEditToggle}
+                      disabled={isLoading}
+                    >
+                      {isEditing ? "Lưu thông tin" : "Sửa thông tin"}
+                    </button>
+                  </div>
                 </div>
+
                 <div style={{ marginTop: 27 }} className="d-flex flex-column">
                   <div className="form-avatar mb-4 ">
                     <div className="styles__StyleAvatar-sc-7twymm-0 iRBxWb">
@@ -337,19 +353,21 @@ const ProfilePage = () => {
                         </div>
                       </div>
                     </div>
-                    <label
-                      htmlFor="avatarInput"
-                      className="file-label d-flex justify-content-center align-items-center"
-                    >
-                      <p>Tải lên ảnh</p>
-                      <input
-                        id="avatarInput"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleAvatarChange}
-                        className="hidden-input"
-                      />
-                    </label>
+                    {isEditing && (
+                      <label
+                        htmlFor="avatarInput"
+                        className="file-label d-flex justify-content-center align-items-center"
+                      >
+                        <p>Tải lên ảnh</p>
+                        <input
+                          id="avatarInput"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleAvatarChange}
+                          className="hidden-input"
+                        />
+                      </label>
+                    )}
                   </div>
                   <div className="form-controls mb-3">
                     <label className="input-label">Họ và tên</label>
@@ -362,11 +380,12 @@ const ProfilePage = () => {
                         placeholder="Thêm họ tên"
                         value={name}
                         onChange={handlOnchangeName}
+                        disabled={!isEditing}
                       />
                     </div>
                   </div>
                   <div className="form-controls mb-3">
-                    <label className="input-label">Nickname</label>
+                    <label className="input-label">Username</label>
                     <div>
                       <input
                         className="input"
@@ -376,6 +395,7 @@ const ProfilePage = () => {
                         type="text"
                         value={nickname}
                         onChange={handlOnchangeNickName}
+                        disabled={!isEditing}
                       />
                     </div>
                   </div>
@@ -388,6 +408,7 @@ const ProfilePage = () => {
                         type="date"
                         value={dob}
                         onChange={handleDobChange}
+                        disabled={!isEditing}
                       />
                     </div>
                   </div>
@@ -401,6 +422,7 @@ const ProfilePage = () => {
                         value="Nam"
                         checked={gender === "Nam"}
                         onChange={handleGenderChange}
+                        disabled={!isEditing}
                       />
                       <span
                         style={{ marginRight: 20 }}
@@ -415,6 +437,7 @@ const ProfilePage = () => {
                         value="Nữ"
                         checked={gender === "Nữ"}
                         onChange={handleGenderChange}
+                        disabled={!isEditing}
                       />
                       <span
                         style={{ marginRight: 20 }}
@@ -429,6 +452,7 @@ const ProfilePage = () => {
                         value="Khác"
                         checked={gender === "Khác"}
                         onChange={handleGenderChange}
+                        disabled={!isEditing}
                       />
                       <span
                         style={{ marginRight: 40 }}
@@ -449,6 +473,7 @@ const ProfilePage = () => {
                         placeholder="Cập nhật SDT"
                         value={phone}
                         onChange={handlOnchangePhone}
+                        disabled={!isEditing}
                       />
                     </div>
                   </div>
@@ -462,47 +487,53 @@ const ProfilePage = () => {
                         placeholder="Cập nhật Email"
                         value={email}
                         onChange={handlOnchangeEmail}
+                        disabled={!isEditing}
                       />
                     </div>
                   </div>
                 </div>
 
                 <div className="container">
-                  <div className="address-container">
-                    <div className="form-policy-secondd">
-                      <select
-                        className="custom-select"
-                        value={selectedProvince}
-                        onChange={handleProvinceChange}
-                      >
-                        <option value="">Chọn tỉnh</option>
-                        {provinces.map((province) => (
-                          <option key={province.code} value={province.code}>
-                            {province.name_with_type}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {selectedProvince && (
-                      <div  style={{marginLeft:"-110px"}} className="form-policy-secondd">
+                  {isEditing && (
+                    <div className="address-container">
+                      <div className="form-policy-secondd">
                         <select
                           className="custom-select"
-                          value={selectedDistrict}
-                          onChange={handleDistrictChange}
+                          value={selectedProvince}
+                          onChange={handleProvinceChange}
                         >
-                          <option value="">Chọn quận huyện</option>
-                          {districts.map((district) => (
-                            <option key={district.code} value={district.code}>
-                              {district.name_with_type}
+                          <option value="">Chọn tỉnh</option>
+                          {provinces.map((province) => (
+                            <option key={province.code} value={province.code}>
+                              {province.name_with_type}
                             </option>
                           ))}
                         </select>
                       </div>
-                    )}
-                  </div>
 
-                  {selectedDistrict && (
+                      {selectedProvince && (
+                        <div
+                          style={{ marginLeft: "-110px" }}
+                          className="form-policy-secondd"
+                        >
+                          <select
+                            className="custom-select"
+                            value={selectedDistrict}
+                            onChange={handleDistrictChange}
+                          >
+                            <option value="">Chọn quận huyện</option>
+                            {districts.map((district) => (
+                              <option key={district.code} value={district.code}>
+                                {district.name_with_type}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {isEditing && selectedDistrict && (
                     <div className="address-container">
                       <div className="form-policy-secondd">
                         <select
@@ -540,8 +571,9 @@ const ProfilePage = () => {
                       type="text"
                       name="specificAddress"
                       placeholder="Số nhà, đường, ..."
-                      value={address} // Hiển thị địa chỉ đã cập nhật
+                      value={address}
                       onChange={handlOnchangeAddress}
+                      disabled={!isEditing}
                     />
                   </div>
                 </div>
@@ -552,11 +584,13 @@ const ProfilePage = () => {
               {errors["phone"] && (
                 <p className="error-text">{errors["phone"]}</p>
               )}
-              <div className="button-accout text-center">
-                <button onClick={handleUpdate} disabled={isLoading}>
-                  {isLoading ? "Đang cập nhật..." : "Cập nhật"}
-                </button>
-              </div>
+              {isEditing && (
+                <div className="button-accout text-center">
+                  <button onClick={handleUpdate} disabled={isLoading}>
+                    {isLoading ? "Đang cập nhật..." : "Cập nhật"}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

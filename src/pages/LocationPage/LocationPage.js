@@ -6,7 +6,7 @@ const stores = {
   hanoi: [
     {
       name: "Chi nhánh Hà Đông",
-      address: "Nguyễn Trác, Yên Nghĩa, Hà Đông, Hà Nội, Việt Nam",
+      address: "P. Nguyễn Trác, Yên Nghĩa, Hà Đông, Hà Nội, Việt Nam",
       map: "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d14901.73295022116!2d105.7461115!3d20.9626112!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x313452efff394ce3%3A0x391a39d4325be464!2zVHLGsOG7nW5nIMSQ4bqhaSBI4buNYyBQaGVuaWthYQ!5e0!3m2!1svi!2s!4v1689822769658!5m2!1svi!2s",
     },
     {

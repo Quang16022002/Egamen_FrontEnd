@@ -134,27 +134,6 @@
         box-shadow: -7px 7px 7px #d2cfcf;
     }
 }
-// .product_description_area {
-//     padding-bottom: 120px;
-//     margin-top: 60px;
-//     .nav-tabs {
-//     background: #f6f6f6;
-//     text-align: center;
-//     display: flex;
-//     justify-content: center;
-//     border: none;
-//     padding: 10px 0px;
-    
-//     li {
-//         display: inline-block;
-//         margin-right: 7px;
-//         background-color: white;
-//         font-size: 13px;
-//         padding: 10px 30px;
-//         cursor: pointer;
-//     }
-//     }
-// }
 
 
 /* Style for the tab navigation */
@@ -272,3 +251,25 @@
     padding: 0;
     margin: 0;
   }
+
+.color-options, .size-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.color-option, .size-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.color-option.selected, .size-option.selected {
+  background-color: black;
+  color: #fff;
+}
