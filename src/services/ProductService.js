@@ -26,13 +26,9 @@ export const getAllTypeProduct = async () => {
 };
 
 
-export const updateProduct = async (id, data, access_token) => {
-    const res = await axios.put(`${process.env.REACT_APP_API_KEY}/product/update/${id}`, data, { 
-    
-        headers: {
-            token: `Bearer ${access_token}`,
-        }
-    },)
+export const updateProduct = async (id, data) => {
+    const res = await axios.put(`${process.env.REACT_APP_API_KEY}/product/update/${id}`, data) ;
+        return res.data;
 
 };
 

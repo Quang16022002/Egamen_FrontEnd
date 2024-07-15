@@ -17,6 +17,9 @@ const HeaderComponent = () => {
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
   const order = useSelector((state) => state.order);
+  const favoriteItems = useSelector((state) => state.favorite.favoriteItems);
+  console.log("adadad", order)
+  console.log("favoriteItems", favoriteItems)
   const handleLogout = async () => {
     try {
       await UserService.logoutUser();
@@ -28,6 +31,7 @@ const HeaderComponent = () => {
       message.error();
     }
   };
+
 
   useEffect(() => {
     if (user && user.name) {
@@ -217,7 +221,14 @@ const HeaderComponent = () => {
                       </div>
                     </i>
                   </Link>
-                  <i className="fa-regular fa-heart"></i>
+                  <Link to="/favorite">
+                    {" "}
+                    <i class="fa-regular fa-heart">
+                      <div className="quantity-favorite">
+                        {favoriteItems?.length}
+                      </div>
+                    </i>
+                  </Link>
                 </div>
               </form>
             </div>

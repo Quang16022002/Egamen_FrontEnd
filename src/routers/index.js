@@ -16,6 +16,7 @@ import DeliveryPolicyPage from "../pages/PolicyPage/DeliveryPolicyPage";
 import SalesPolicyPage from "../pages/PolicyPage/SalesPolicyPage";
 import ReturnPolicyPage from "../pages/PolicyPage/ReturnPolicyPage";
 import LocationPage from "../pages/LocationPage/LocationPage";
+import FavoritePage from "../pages/FavoritePage/FavoritePage";
 const routes = [
   {
     path: "/",
@@ -71,6 +72,11 @@ const routes = [
   {
     path: "/payment",
     page: PaymentPage,
+    isShowHeader: true,
+  },
+  {
+    path: "/favorite",
+    page: FavoritePage,
     isShowHeader: true,
   },
   {
