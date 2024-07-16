@@ -4,13 +4,15 @@ import {
   AppstoreOutlined,
   UserOutlined,
   ShoppingCartOutlined,
-  ProfileOutlined
+  ProfileOutlined,
+  AreaChartOutlined
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import AdminProduct from "../../components/AdminProduct/AdminProduct";
 import AdminUser from '../../components/AdminUser/AdminUser';
 import AdminOrder from "../../components/AdminOrder/AdminOrder";
 import AdminPost from "../../components/AdminPost/AdminPost";
+import AdminStatistical from '../../components/AdminStatistical/AdminStatistical';
 
 export const AdminPage = () => {
   const items = [
@@ -34,6 +36,11 @@ export const AdminPage = () => {
       icon: <ProfileOutlined />,
       label: "Quản lý bài viết",
     },
+    {
+      key: "statistical",
+      icon: <AreaChartOutlined /> ,
+      label: "Thống kê",
+    },
   ];
 
   const [keySelected, setKeySelected] = useState("user"); // Set default selected key to 'user'
@@ -49,6 +56,8 @@ export const AdminPage = () => {
         return <AdminOrder />;
         case 'post':
           return <AdminPost />;
+          case 'statistical':
+            return <AdminStatistical />;
       default:
         return <AdminUser />;
     }
