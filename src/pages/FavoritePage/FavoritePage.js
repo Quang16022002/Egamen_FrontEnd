@@ -1,10 +1,23 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { removeFavorite } from '../../redux/counter/favoriteSlice'; 
+import { updateProduct } from '../../services/ProductService'; 
 import './FavoritePage.scss';
 
 const FavoritePage = () => {
+  const dispatch = useDispatch();
   const favoriteItems = useSelector((state) => state.favorite.favoriteItems);
+
+  const handleRemoveFavorite = async (itemId) => {
+    try {
+      await updateProduct(itemId, { isFavorite: false });
+      
+      dispatch(removeFavorite(itemId));
+    } catch (error) {
+      console.error('Error removing favorite item:', error);
+    }
+  };
 
   return (
     <div className="favorite-page container my-5">
@@ -29,6 +42,9 @@ const FavoritePage = () => {
                   <h2 style={{}}>{item.name}</h2>
                 </Link>
                 <p>Giá: {item.price} đ</p>
+                <button onClick={() => handleRemoveFavorite(item.id)} className="btn btn-danger">
+                  Xóa
+                </button>
               </div>
             </div>
           ))}

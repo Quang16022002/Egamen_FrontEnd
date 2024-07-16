@@ -229,6 +229,7 @@ const ProductsPage = () => {
                     original_price={product.original_price}
                     size={product.size}
                     color={product.color}
+                    isFavorite={product.isFavorite}
                   />
                 ))}
               </div>
