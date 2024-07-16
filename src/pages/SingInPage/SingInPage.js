@@ -81,7 +81,7 @@ const SignInPage = () => {
       </div>
 
       <div className="heading-bar text-center py-5">
-        <h1 style={{fontSize: "25px"}}>ĐĂNG NHẬP TÀI KHOẢN</h1>
+        <h1 style={{ fontSize: "25px" }}>ĐĂNG NHẬP TÀI KHOẢN</h1>
         <p>
           Bạn chưa có tài khoản? Đăng ký
           <span

@@ -1,0 +1,63 @@
+
+  .container {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  
+  .favorite-page {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    margin-bottom: 100px;
+  }
+  
+  .favorite-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .favorite-item {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    transition: transform 0.2s;
+  }
+  
+  .favorite-item:hover {
+    transform: translateY(-2px);
+  }
+  
+  .favorite-item img {
+    border-radius: 10px;
+    margin-right: 1rem;
+  }
+  
+  .favorite-item-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .favorite-item-details h2 {
+    margin: 0;
+    color: #333;
+  }
+  
+  .favorite-item-details p {
+    margin: 0.5rem 0 0;
+    color: #777;
+  }
+  .favorite-item-details .btn-danger {
+    margin-top: 0.5rem;
+    align-self: flex-start;
+  }
+  
