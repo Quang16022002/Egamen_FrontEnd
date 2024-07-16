@@ -233,6 +233,7 @@ const OrderManagement = () => {
                         <p>{getPaymentMethodText(order.paymentMethod)}</p>
                       </div>
                     </div>
+                      <div>Mã đơn hàng: <span>{order._id}</span></div>
                   </div>
                   <div className="row flex float-right py-2">
                     {order.isPaid && !order.isDelivered ? (
