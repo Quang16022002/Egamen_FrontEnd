@@ -109,34 +109,6 @@ const HeaderComponent = () => {
                                   </Link>
                                 </>
                               )}
-
-                              {/* <li className="d-flex">
-                                <Link
-                                  style={{ fontSize: 13 }}
-                                  to="/system-admin"
-                                  className="profile d-flex align-items-center"
-                                >
-                                  <i className="fa-solid fa-screwdriver-wrench"></i>
-                                  <span
-                                    style={{
-                                      textTransform: "none",
-                                      color: "#4A4A4A",
-                                    }}
-                                  >
-                                    Quản lý hệ thống
-                                  </span>
-                                </Link>
-                              </li>
-                              <Link
-                                style={{ width: "100%" }}
-                                to={`OrderManagement/${user.id}`}
-                              >
-                                <li>
-                                  <i className="fa-regular fa-money-bill-1"></i>
-                                  <span>Đơn hàng</span>
-                                </li>
-                              </Link> */}
-
                               <li onClick={handleLogout}>
                                 <i className="fa-solid fa-arrow-right-from-bracket"></i>
                                 <span>Đăng xuất</span>
@@ -251,7 +223,7 @@ const HeaderComponent = () => {
                   </Link>
                   <Link to="/favorite">
                     {" "}
-                    <i class="fa-regular fa-heart">
+                    <i class="fa-solid fa-heart">
                       <div className="quantity-favorite">
                         {favoriteItems?.length}
                       </div>

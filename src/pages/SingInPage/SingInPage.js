@@ -130,7 +130,7 @@ const SignInPage = () => {
           </div>
         </form>
 
-        <p style={{ fontSize: "14px" }}>
+        {/* <p style={{ fontSize: "14px" }}>
           Quên mật khẩu? Nhấn vào
           <span
             className="px-0"
@@ -139,8 +139,8 @@ const SignInPage = () => {
           >
             {" "}
             đây.
-          </span>
-        </p>
+          </span> 
+        </p>*/}
         {data?.status === "ERR" && (
           <span style={{ color: "red", fontSize: "14px" }}>
             {data?.message}
