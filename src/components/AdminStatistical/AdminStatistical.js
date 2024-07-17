@@ -45,7 +45,7 @@ const AdminStatistical = () => {
 
   const calculateSalesByPeriod = () => {
     if (!orders || !orders.length) {
-      return { salesByDay: {}, salesByMonth: {} }; // Return empty objects if orders is null, undefined, or empty
+      return { salesByDay: {}, salesByMonth: {} }; 
     }
 
     const salesByDay = {};
@@ -53,17 +53,17 @@ const AdminStatistical = () => {
 
     orders.forEach((order) => {
       const orderDate = new Date(order.createdAt);
-      const dayKey = orderDate.toISOString().slice(0, 10); // Key format: YYYY-MM-DD
+      const dayKey = orderDate.toISOString().slice(0, 10); 
       const monthKey = `${orderDate.getFullYear()}-${(
         "0" +
         (orderDate.getMonth() + 1)
-      ).slice(-2)}`; // Key format: YYYY-MM
+      ).slice(-2)}`; 
 
       if (!salesByDay[dayKey]) {
-        salesByDay[dayKey] = { count: 0, revenue: 0, orders: {} }; // Use an object to store orders
+        salesByDay[dayKey] = { count: 0, revenue: 0, orders: {} }; 
       }
       if (!salesByMonth[monthKey]) {
-        salesByMonth[monthKey] = { count: 0, revenue: 0, productSales: {} }; // Initialize productSales as an object
+        salesByMonth[monthKey] = { count: 0, revenue: 0, productSales: {} }; 
       }
 
       const cleanedTotalPrice = parseInt(
@@ -82,9 +82,8 @@ const AdminStatistical = () => {
         const quantity = item.amount;
         const productPrice = parseInt(item.price.replace(/[^\d]/g, ""));
 
-        // Ensure order has products and each product has valid data
         if (productName && quantity && productPrice) {
-          // Add product details to salesByDay
+        
           if (!salesByDay[dayKey].orders[order._id]) {
             salesByDay[dayKey].orders[order._id] = {
               orderId: order._id,
@@ -99,7 +98,7 @@ const AdminStatistical = () => {
             price: productPrice,
           });
 
-          // Add product details to salesByMonth
+      
           if (!salesByMonth[monthKey].productSales[productId]) {
             salesByMonth[monthKey].productSales[productId] = {
               productName,
@@ -116,7 +115,7 @@ const AdminStatistical = () => {
       });
     });
 
-    // Convert orders object to array for easier rendering
+
     Object.keys(salesByDay).forEach((day) => {
       salesByDay[day].orders = Object.values(salesByDay[day].orders);
     });
@@ -180,7 +179,7 @@ const AdminStatistical = () => {
   };
 
   const generateLineChartData = (salesByDay) => {
-    const labels = Object.keys(salesByDay).sort(); // Sort the dates
+    const labels = Object.keys(salesByDay).sort(); 
     const data = labels.map((day) => salesByDay[day].revenue);
 
     return {
