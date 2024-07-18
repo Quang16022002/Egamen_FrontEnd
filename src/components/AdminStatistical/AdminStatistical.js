@@ -29,6 +29,7 @@ Chart.register(
 const AdminStatistical = () => {
   const [orders, setOrders] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [view, setView] = useState("day"); // "day", "month" or "year"
 
   useEffect(() => {
     fetchOrders();
@@ -45,25 +46,30 @@ const AdminStatistical = () => {
 
   const calculateSalesByPeriod = () => {
     if (!orders || !orders.length) {
-      return { salesByDay: {}, salesByMonth: {} }; 
+      return { salesByDay: {}, salesByMonth: {}, salesByYear: {} };
     }
 
     const salesByDay = {};
     const salesByMonth = {};
+    const salesByYear = {};
 
     orders.forEach((order) => {
       const orderDate = new Date(order.createdAt);
-      const dayKey = orderDate.toISOString().slice(0, 10); 
+      const dayKey = orderDate.toISOString().slice(0, 10);
       const monthKey = `${orderDate.getFullYear()}-${(
         "0" +
         (orderDate.getMonth() + 1)
-      ).slice(-2)}`; 
+      ).slice(-2)}`;
+      const yearKey = orderDate.getFullYear().toString();
 
       if (!salesByDay[dayKey]) {
-        salesByDay[dayKey] = { count: 0, revenue: 0, orders: {} }; 
+        salesByDay[dayKey] = { count: 0, revenue: 0, orders: {} };
       }
       if (!salesByMonth[monthKey]) {
-        salesByMonth[monthKey] = { count: 0, revenue: 0, productSales: {} }; 
+        salesByMonth[monthKey] = { count: 0, revenue: 0, productSales: {} };
+      }
+      if (!salesByYear[yearKey]) {
+        salesByYear[yearKey] = { count: 0, revenue: 0, productSales: {} };
       }
 
       const cleanedTotalPrice = parseInt(
@@ -76,6 +82,9 @@ const AdminStatistical = () => {
       salesByMonth[monthKey].count += 1;
       salesByMonth[monthKey].revenue += cleanedTotalPrice;
 
+      salesByYear[yearKey].count += 1;
+      salesByYear[yearKey].revenue += cleanedTotalPrice;
+
       order.orderItems.forEach((item) => {
         const productId = item.product;
         const productName = item.name;
@@ -83,7 +92,6 @@ const AdminStatistical = () => {
         const productPrice = parseInt(item.price.replace(/[^\d]/g, ""));
 
         if (productName && quantity && productPrice) {
-        
           if (!salesByDay[dayKey].orders[order._id]) {
             salesByDay[dayKey].orders[order._id] = {
               orderId: order._id,
@@ -98,9 +106,15 @@ const AdminStatistical = () => {
             price: productPrice,
           });
 
-      
           if (!salesByMonth[monthKey].productSales[productId]) {
             salesByMonth[monthKey].productSales[productId] = {
+              productName,
+              totalQuantity: 0,
+              totalRevenue: 0,
+            };
+          }
+          if (!salesByYear[yearKey].productSales[productId]) {
+            salesByYear[yearKey].productSales[productId] = {
               productName,
               totalQuantity: 0,
               totalRevenue: 0,
@@ -111,19 +125,23 @@ const AdminStatistical = () => {
             quantity;
           salesByMonth[monthKey].productSales[productId].totalRevenue +=
             productPrice * quantity;
+
+          salesByYear[yearKey].productSales[productId].totalQuantity +=
+            quantity;
+          salesByYear[yearKey].productSales[productId].totalRevenue +=
+            productPrice * quantity;
         }
       });
     });
-
 
     Object.keys(salesByDay).forEach((day) => {
       salesByDay[day].orders = Object.values(salesByDay[day].orders);
     });
 
-    return { salesByDay, salesByMonth };
+    return { salesByDay, salesByMonth, salesByYear };
   };
 
-  const { salesByDay, salesByMonth } = calculateSalesByPeriod();
+  const { salesByDay, salesByMonth, salesByYear } = calculateSalesByPeriod();
 
   const generatePieChartData = (salesByDay) => {
     const labels = [];
@@ -179,7 +197,7 @@ const AdminStatistical = () => {
   };
 
   const generateLineChartData = (salesByDay) => {
-    const labels = Object.keys(salesByDay).sort(); 
+    const labels = Object.keys(salesByDay).sort();
     const data = labels.map((day) => salesByDay[day].revenue);
 
     return {
@@ -227,10 +245,9 @@ const AdminStatistical = () => {
   return (
     <div className="sales-report container">
       <div className="Admin_user-title d-flex justify-content-between my-3">
-        <h5>Thống kê</h5>
+        <h5>Thống kê doanh thu</h5>
         <TimeComponent />
       </div>
-      <h1>Báo cáo doanh số</h1>
       <div className="sales-by-period">
         <div className="px-3 py-3 d-flex">
           <div
@@ -241,111 +258,230 @@ const AdminStatistical = () => {
               style={{ width: "100%", textAlign: "center", margin: "0 auto" }}
               className="pie-chart-container d-flex flex-column"
             >
-              <h3 style={{ marginBottom: 20, width: "100%" }}>
-                Biểu đồ doanh số sản phẩm bán ra
-              </h3>
               <div style={{ width: 400, height: 400, margin: "0 auto" }}>
                 <Pie data={pieChartData} options={options} />
               </div>
-            </div>
-         
-          </div>
-          <div
-              className="line-chart-container d-flex flex-column"
-              style={{ marginTop: "40px" }}
-            >
               <h3
                 style={{
-                  textAlign: "center",
-                  marginBottom: "20px",
+                  marginTop: 20,
+                  width: "100%",
+                  fontWeight: "400",
                 }}
               >
-                Biểu đồ đường doanh số bán ra theo ngày
+                Biểu đồ doanh số sản phẩm bán ra
               </h3>
-              <div style={{ width: "100%", height: "auto", margin: "0 auto" }}>
-                <Line data={lineChartData} />
-              </div>
             </div>
+          </div>
+          <div
+            className="line-chart-container d-flex flex-column"
+            style={{ marginTop: "40px" }}
+          >
+            <div style={{ width: "100%", height: "auto", marginTop:95 }}>
+              <Line data={lineChartData} />
+            </div>
+            <h3
+              style={{
+                textAlign: "center",
+                marginTop: 20,
+                width: "100%",
+                fontWeight: "400",
+              }}
+            >
+              Biểu đồ đường doanh số bán ra theo ngày
+            </h3>
+          </div>
         </div>
-        <div className=" px-3 py-3 d-flex ">
-          <div style={{ width: "50%" }} className="sales-by-day d-flex">
-            <div>
-              <h3>Số đơn hàng bán ra theo ngày</h3>
+        <div className="px-3 py-4 d-flex justify-content-center buttonAdmin">
+          <button
+            style={{ backgroundColor: "rgb(129, 170, 204)", border: "none" }}
+            className={`btn btn-primary mx-2 ${view === "day" ? "active" : ""}`}
+            onClick={() => setView("day")}
+          >
+            Thống kê theo ngày
+          </button>
+          <button
+            style={{ backgroundColor: "rgb(129, 170, 204)", border: "none" }}
+            className={`btn btn-primary mx-2 ${
+              view === "month" ? "active" : ""
+            }`}
+            onClick={() => setView("month")}
+          >
+            Thống kê theo tháng
+          </button>
+          <button
+            style={{ backgroundColor: "rgb(129, 170, 204)", border: "none" }}
+            className={`btn btn-primary mx-2 ${
+              view === "year" ? "active" : ""
+            }`}
+            onClick={() => setView("year")}
+          >
+            Thống kê theo năm
+          </button>
+        </div>
+        <div className="px-3 py-3 d-flex">
+          {view === "day" && (
+            <div style={{ width: "100%" }} className="sales-by-day">
+              <h3 style={{ fontWeight: "400", textAlign: "center" }}>
+                Số đơn hàng bán ra theo ngày
+              </h3>
               <DatePicker
                 selected={selectedDate}
                 onChange={(date) => setSelectedDate(date)}
                 dateFormat="yyyy-MM-dd"
               />
-              <ul>
-                <li className="my-4">
-                  <strong>{selectedDate.toISOString().slice(0, 10)}</strong>:{" "}
-                  {filteredSalesByDay.count} đơn hàng,{" "}
-                  <span style={{ color: "red", fontWeight: 600 }}>
-                    {filteredSalesByDay.revenue.toLocaleString("vi-VN")}
-                  </span>{" "}
-                  đ
-                  <ul>
-                    {filteredSalesByDay.orders.map((order) => (
-                      <li className="my-2" key={order.orderId}>
-                        Đơn hàng {order.orderId}{" "}
-                        <strong>
-                          ({order.totalPrice.toLocaleString("vi-VN")} đ)
-                        </strong>{" "}
-                        gồm:
-                        <ul>
-                          {order.products.map((product) => (
-                            <li key={product.productId}>
-                              {product.name}: {product.quantity} sản phẩm, giá:{" "}
-                              {product.price.toLocaleString("vi-VN")} đ
-                            </li>
-                          ))}
-                        </ul>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div style={{ width: "50%" }} className="sales-by-month">
-            <h3>Số đơn hàng bán ra theo tháng</h3>
-            <ul>
-              {Object.keys(salesByMonth).map((month) => (
-                <li className="my-4" key={month}>
-                  Tháng <strong>{month}</strong>: {salesByMonth[month].count}{" "}
-                  đơn hàng,{" "}
-                  <span style={{ color: "red", fontWeight: 600 }}>
-                    {salesByMonth[month].revenue.toLocaleString("vi-VN")}
-                  </span>{" "}
-                  đ
-                  {salesByMonth[month].productSales && (
-                    <ul>
-                      {Object.keys(salesByMonth[month].productSales).map(
-                        (productId) => (
-                          <li key={productId}>
-                            {
-                              salesByMonth[month].productSales[productId]
-                                .productName
-                            }
-                            :{" "}
-                            {
-                              salesByMonth[month].productSales[productId]
-                                .totalQuantity
-                            }{" "}
-                            sản phẩm, doanh thu:{" "}
-                            {salesByMonth[month].productSales[
-                              productId
-                            ].totalRevenue.toLocaleString("vi-VN")}{" "}
-                            đ
+              <table
+                style={{ marginTop: "20px" }}
+                className="table table-bordered"
+              >
+                <thead>
+                  <tr>
+                    <th>Ngày</th>
+                    <th>Số đơn hàng</th>
+                    <th>Doanh thu (đ)</th>
+                    <th>Chi tiết đơn hàng</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{selectedDate.toISOString().slice(0, 10)}</td>
+                    <td>{filteredSalesByDay.count}</td>
+                    <td style={{ color: "red", fontWeight: 600 }}>
+                      {filteredSalesByDay.revenue.toLocaleString("vi-VN")}
+                    </td>
+                    <td>
+                      <ul>
+                        {filteredSalesByDay.orders.map((order, index) => (
+                          <li key={order.orderId}>
+                            {index + 1}. Đơn hàng {order.orderId}{" "}
+                            <strong>
+                              ({order.totalPrice.toLocaleString("vi-VN")} đ)
+                            </strong>{" "}
+                            gồm:
+                            <ul>
+                              {order.products.map((product) => (
+                                <li key={product.productId}>
+                                  {product.name}: {product.quantity} sản phẩm,
+                                  giá: {product.price.toLocaleString("vi-VN")} đ
+                                </li>
+                              ))}
+                            </ul>
                           </li>
-                        )
-                      )}
-                    </ul>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
+                        ))}
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+          {view === "month" && (
+            <div style={{ width: "100%" }} className="sales-by-month">
+              <h3 style={{ fontWeight: "400", textAlign: "center" }}>
+                Số đơn hàng bán ra theo tháng
+              </h3>
+              <table className="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Tháng</th>
+                    <th>Số đơn hàng</th>
+                    <th>Doanh thu (đ)</th>
+                    <th>Chi tiết sản phẩm</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.keys(salesByMonth).map((month) => (
+                    <tr key={month}>
+                      <td>{month}</td>
+                      <td>{salesByMonth[month].count}</td>
+                      <td style={{ color: "red", fontWeight: 600 }}>
+                        {salesByMonth[month].revenue.toLocaleString("vi-VN")}
+                      </td>
+                      <td>
+                        {salesByMonth[month].productSales && (
+                          <ul>
+                            {Object.keys(salesByMonth[month].productSales).map(
+                              (productId) => (
+                                <li key={productId}>
+                                  {
+                                    salesByMonth[month].productSales[productId]
+                                      .productName
+                                  }
+                                  :{" "}
+                                  {
+                                    salesByMonth[month].productSales[productId]
+                                      .totalQuantity
+                                  }{" "}
+                                  sản phẩm, doanh thu:{" "}
+                                  {salesByMonth[month].productSales[
+                                    productId
+                                  ].totalRevenue.toLocaleString("vi-VN")}{" "}
+                                  đ
+                                </li>
+                              )
+                            )}
+                          </ul>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {view === "year" && (
+            <div style={{ width: "100%" }} className="sales-by-year">
+              <h3 style={{ fontWeight: "400", textAlign: "center" }}>
+                Số đơn hàng bán ra theo năm
+              </h3>
+              <table className="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Năm</th>
+                    <th>Số đơn hàng</th>
+                    <th>Doanh thu (đ)</th>
+                    <th>Chi tiết sản phẩm</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.keys(salesByYear).map((year) => (
+                    <tr key={year}>
+                      <td>{year}</td>
+                      <td>{salesByYear[year].count}</td>
+                      <td style={{ color: "red", fontWeight: 600 }}>
+                        {salesByYear[year].revenue.toLocaleString("vi-VN")}
+                      </td>
+                      <td>
+                        {salesByYear[year].productSales && (
+                          <ul>
+                            {Object.keys(salesByYear[year].productSales).map(
+                              (productId) => (
+                                <li key={productId}>
+                                  {
+                                    salesByYear[year].productSales[productId]
+                                      .productName
+                                  }
+                                  :{" "}
+                                  {
+                                    salesByYear[year].productSales[productId]
+                                      .totalQuantity
+                                  }{" "}
+                                  sản phẩm, doanh thu:{" "}
+                                  {salesByYear[year].productSales[
+                                    productId
+                                  ].totalRevenue.toLocaleString("vi-VN")}{" "}
+                                  đ
+                                </li>
+                              )
+                            )}
+                          </ul>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </div>

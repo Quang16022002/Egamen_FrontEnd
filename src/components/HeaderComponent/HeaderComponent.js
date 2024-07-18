@@ -18,8 +18,6 @@ const HeaderComponent = () => {
   const navigate = useNavigate();
   const order = useSelector((state) => state.order);
   const favoriteItems = useSelector((state) => state.favorite.favoriteItems);
-  console.log("adadad", order)
-  console.log("favoriteItems", favoriteItems)
   const handleLogout = async () => {
     try {
       await UserService.logoutUser();

@@ -189,14 +189,31 @@ const HomePage = () => {
               <h2>
                 <span>Sản phẩm nổi bật</span>
               </h2>
-              <p>Bạn sẽ không thất vọng khi lựa chọn</p>
-              <FeaturedProductsComponent/>
+              <p>Cập nhật ngay những mẫu hot nhất hiện nay</p>
+              <FeaturedProductsComponent />
             </div>
           </div>
         </div>
       </section>
-      <div className="col-lg-12  container ">
-        <h3 >Tất cả sản phẩm</h3>
+
+      <section style={{ marginTop: "-30px" }} className="container offer-area">
+        <div>
+          <img
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/products")}
+            className="offer-area-img"
+            src="https://theme.hstatic.net/200000690725/1001078549/14/slide_4_img.jpg?v=418"
+          />
+        </div>
+      </section>
+
+      <div className="col-lg-12  container py-3 ">
+        <div class="main_title">
+          <h2>
+            <span>Set đồ dành cho bạn</span>
+          </h2>
+          <p>Bạn sẽ không thất vọng khi lựa chọn</p>
+        </div>
         <div className="products row d-flex flex-wrap">
           {products?.data
             ?.filter((product) => product.type)
@@ -226,19 +243,10 @@ const HomePage = () => {
       <section
         className="all-product"
         onClick={() => navigate("/products")}
-        style={{ cursor: "pointer" }}
+        style={{ cursor: "pointer", marginBottom: "30px" }}
       >
         <p>Xem tất cả</p>
         <i class="fa-solid fa-chevron-right"></i>
-      </section>
-
-      <section className="container offer-area">
-        <div className="py-3">
-          <img
-            className="offer-area-img"
-            src="https://theme.hstatic.net/200000690725/1001078549/14/slide_4_img.jpg?v=418"
-          />
-        </div>
       </section>
 
       <section className="container">
@@ -255,7 +263,7 @@ const HomePage = () => {
       <section
         className="all-product"
         onClick={() => navigate("/blog")}
-        style={{ cursor: "pointer", marginBottom:"30px" }}
+        style={{ cursor: "pointer", marginBottom: "30px" }}
       >
         <p>Xem tất cả</p>
         <i class="fa-solid fa-chevron-right"></i>

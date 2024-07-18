@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import './AdminPage.scss'
+import "./AdminPage.scss";
 import {
   AppstoreOutlined,
   UserOutlined,
   ShoppingCartOutlined,
   ProfileOutlined,
-  AreaChartOutlined
+  AreaChartOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import AdminProduct from "../../components/AdminProduct/AdminProduct";
-import AdminUser from '../../components/AdminUser/AdminUser';
+import AdminUser from "../../components/AdminUser/AdminUser";
 import AdminOrder from "../../components/AdminOrder/AdminOrder";
 import AdminPost from "../../components/AdminPost/AdminPost";
-import AdminStatistical from '../../components/AdminStatistical/AdminStatistical';
+import AdminStatistical from "../../components/AdminStatistical/AdminStatistical";
 
 export const AdminPage = () => {
   const items = [
@@ -38,8 +38,8 @@ export const AdminPage = () => {
     },
     {
       key: "statistical",
-      icon: <AreaChartOutlined /> ,
-      label: "Thống kê",
+      icon: <AreaChartOutlined />,
+      label: "Thống kê doanh thu",
     },
   ];
 
@@ -48,20 +48,20 @@ export const AdminPage = () => {
 
   const renderPage = (key) => {
     switch (key) {
-      case 'user':
+      case "user":
         return <AdminUser />;
-      case 'product':
+      case "product":
         return <AdminProduct />;
-      case 'order':
+      case "order":
         return <AdminOrder />;
-        case 'post':
-          return <AdminPost />;
-          case 'statistical':
-            return <AdminStatistical />;
+      case "post":
+        return <AdminPost />;
+      case "statistical":
+        return <AdminStatistical />;
       default:
         return <AdminUser />;
     }
-  }
+  };
   const onOpenChange = (openKeys) => {
     setStateOpenKeys(openKeys);
   };
@@ -79,12 +79,19 @@ export const AdminPage = () => {
         onOpenChange={onOpenChange}
         style={{
           width: 230,
-          height: 'auto',
+          height: "auto",
         }}
       >
         {items.map((item) => (
           <Menu.Item
-            style={{ width: 215, color: 'white', fontSize: 15, padding: 25, fontWeight: 500 }}
+            style={{
+              width: 215,
+              color: "black",
+              fontSize: 15,
+              padding: 25,
+              fontWeight: 500,
+              marginTop: "20px",
+            }}
             key={item.key}
             icon={item.icon}
             onClick={handleOnClick}
@@ -93,7 +100,7 @@ export const AdminPage = () => {
           </Menu.Item>
         ))}
       </Menu>
-      <div style={{ width: '100%' }} className="admin-content py-2 px-2">
+      <div style={{ width: "100%" }} className="admin-content py-2 px-2">
         {renderPage(keySelected)}
       </div>
     </div>
