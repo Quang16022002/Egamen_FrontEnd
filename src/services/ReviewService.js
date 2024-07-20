@@ -10,3 +10,13 @@ export const addReview = async (reviewData) => {
     throw new Error('Error adding review');
   }
 };
+
+export const getAllReview= async (productId) => {
+  try {
+    const res = await axios.get(`${process.env.REACT_APP_API_KEY}/review/getall/${productId}`);
+    return res.data;
+  } catch (error) {
+    console.error(`Error fetching product details for id ${productId}:`, error);
+    throw error; 
+  }
+};

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import * as ProductService from "../../services/ProductService";
+import * as ReviewService from "../../services/ReviewService";
 import "./ProductDetailComponent.scss";
 import FooterComponent from "../FooterComponent/FooterComponent";
 import { toast } from "react-toastify";
@@ -17,7 +18,7 @@ const ProductDetailComponent = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
-
+  const [reviews, setReviews] = useState([]);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
 
@@ -32,12 +33,23 @@ const ProductDetailComponent = () => {
       setError("Có lỗi xảy ra khi lấy chi tiết sản phẩm.");
     }
   };
+  const fetchProductReviews = async (productId) => {
+    try {
+      const response = await ReviewService.getAllReview(productId);
+      setReviews(response.data);
+    } catch (error) {
+      console.error("Lỗi khi lấy nhận xét sản phẩm:", error);
+      setError("Có lỗi xảy ra khi lấy nhận xét sản phẩm.");
+    }
+  };
 
   useEffect(() => {
     if (id) {
       fetchProductDetails(id);
+      fetchProductReviews(id);
     }
   }, [id]);
+  console.log("reviews",reviews)
 
   const handleQuantityChange = (delta) => {
     setQuantity((prevQuantity) => {
@@ -240,10 +252,8 @@ const ProductDetailComponent = () => {
         </div>
       </div>
       <p className="container px-5" style={{fontSize:"20px", fontWeight: 500}}>Đánh giá và nhận xét {product.name} </p>
-      <div className="container px-3">
-        <ReviewComponent />
-        <ReviewComponent />
-        <ReviewComponent />
+      <div className="container px-3 d-flex flex-column">
+        <ReviewComponent reviews={reviews} /> {/* Truyền reviews vào ReviewComponent */}
       </div>
     </div>
   );
