@@ -1,8 +1,8 @@
 import React from "react";
-import "./ReviewComponent.scss"; // Đảm bảo bạn có tệp CSS này
+import "./ReviewComponent.scss"; 
 
 const ReviewComponent = ({ reviews }) => {
-  const a = reviews?.reviews || []; // Nếu reviews hoặc reviews.reviews không tồn tại, a sẽ là một mảng rỗng
+  const a = reviews?.reviews || []; 
 
   return (
     <div className="review-container d-flex flex-column">
@@ -10,7 +10,7 @@ const ReviewComponent = ({ reviews }) => {
         <div key={review._id} className="container d-flex review-item px-5">
           <div className="avatar-review">
             <img
-              src={review.user.avatar || "https://default-avatar.png"} // Fallback avatar URL
+              src={review.user.avatar || "https://default-avatar.png"} 
               alt="Avatar"
               className="avatar-img"
             />
@@ -46,6 +46,7 @@ const ReviewComponent = ({ reviews }) => {
           </div>
         </div>
       ))}
+      
     </div>
   );
 };

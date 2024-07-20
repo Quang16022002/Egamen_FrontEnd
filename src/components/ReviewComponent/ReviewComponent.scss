@@ -3,7 +3,7 @@
     display: flex;
     align-items: flex-start;
     border-radius: 8px;
-    margin: 10px 0;
+    margin: 20px 0;
   }
   
   .avatar-review {
@@ -28,10 +28,12 @@
   .review-date, .purchase-place {
     font-size: 0.9em;
     color: gray;
+    margin-left: 20px;
+    margin-top: 2px;
   }
   
   .star-rating {
-    margin: 5px 0;
+    margin: -10px 0;
     white-space: nowrap;
   }
   
@@ -39,21 +41,18 @@
     color: gold;
   }
   
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 5px 0;
-  }
-  
-  .tag {
-    background-color: #f0f0f0;
-    border-radius: 12px;
-    padding: 5px 10px;
-    margin: 5px 5px 0 0;
-    font-size: 0.85em;
-  }
-  
   .review-text {
+    margin-top: 25px;
+  }
+  .uploaded-images {
+    display: flex;
     margin-top: 10px;
   }
   
+  .uploaded-img {
+    width: 100px;
+    height: 100px;
+    margin-right: 10px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
