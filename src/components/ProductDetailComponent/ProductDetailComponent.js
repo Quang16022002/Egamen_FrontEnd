@@ -239,7 +239,13 @@ const ProductDetailComponent = () => {
           </div>
         </div>
       </div>
-      <p className="container px-5" style={{fontSize:"20px", fontWeight: 500}}>Đánh giá và nhận xét {product.name} </p>
+      <p
+        className="container px-5"
+        style={{ fontSize: "25px", fontWeight: 500, marginBottom: "40px" }}
+      >
+        Đánh giá và nhận xét sản phẩm{" "}
+        <span style={{ color: "rgb(129, 170, 204)" }}>{product.name}</span>
+      </p>
       <div className="container px-3">
         <ReviewComponent />
         <ReviewComponent />
