@@ -197,18 +197,44 @@ const AdminStatistical = () => {
   };
 
   const generateLineChartData = (salesByDay) => {
-    const labels = Object.keys(salesByDay).sort();
-    const data = labels.map((day) => salesByDay[day].revenue);
+    const labels = Object.keys(salesByDay).sort(); // Lấy các ngày và sắp xếp theo thứ tự
+    const revenueData = labels.map((day) => salesByDay[day].revenue); // Dữ liệu doanh thu
+    const orderCountData = labels.map((day) => salesByDay[day].count); // Dữ liệu số lượng đơn hàng
+    const productQuantityData = labels.map((day) =>
+      salesByDay[day].orders.reduce((total, order) => {
+        return (
+          total +
+          order.products.reduce((sum, product) => sum + product.quantity, 0)
+        );
+      }, 0)
+    ); // Dữ liệu số lượng sản phẩm bán ra
 
     return {
       labels,
       datasets: [
         {
           label: "Doanh thu bán ra theo ngày",
-          data,
+          data: revenueData,
           fill: false,
           borderColor: "rgba(75,192,192,1)",
           tension: 0.1,
+          yAxisID: "revenue-y-axis",
+        },
+        {
+          label: "Số đơn hàng",
+          data: orderCountData,
+          fill: false,
+          borderColor: "rgba(255,99,132,1)",
+          tension: 0.1,
+          yAxisID: "order-count-y-axis",
+        },
+        {
+          label: "Số lượng sản phẩm bán ra",
+          data: productQuantityData,
+          fill: false,
+          borderColor: "rgba(54, 162, 235, 1)",
+          tension: 0.1,
+          yAxisID: "product-quantity-y-axis",
         },
       ],
     };
@@ -276,7 +302,7 @@ const AdminStatistical = () => {
             className="line-chart-container d-flex flex-column"
             style={{ marginTop: "40px" }}
           >
-            <div style={{ width: "100%", height: "auto", marginTop:95 }}>
+            <div style={{ width: "100%", height: "auto", marginTop: 95 }}>
               <Line data={lineChartData} />
             </div>
             <h3

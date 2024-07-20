@@ -6,6 +6,7 @@ import FooterComponent from "../FooterComponent/FooterComponent";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { addOrderProduct } from "../../redux/counter/orderSlice";
+import ReviewComponent from "../ReviewComponent/ReviewComponent";
 
 const ProductDetailComponent = () => {
   const { id } = useParams(); // Lấy tham số id từ URL
@@ -238,7 +239,12 @@ const ProductDetailComponent = () => {
           </div>
         </div>
       </div>
-      <FooterComponent />
+      <p className="container px-5" style={{fontSize:"20px", fontWeight: 500}}>Đánh giá và nhận xét {product.name} </p>
+      <div className="container px-3">
+        <ReviewComponent />
+        <ReviewComponent />
+        <ReviewComponent />
+      </div>
     </div>
   );
 };
