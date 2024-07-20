@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import * as OrderService from "../../services/OrderService";
+import * as ReviewService from "../../services/ReviewService";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import "./OrderManagement.scss";
@@ -7,13 +8,19 @@ import logo from "../../assets/images/logo2.png";
 import FooterComponent from "../../components/FooterComponent/FooterComponent";
 import LoadingComponent from "../../components/LoadingComponent/LoadingComponent";
 import { toast } from "react-toastify";
-
+import { Modal, Button, Input, Form, Rate, Upload, message } from 'antd';
+import { UploadOutlined,DeleteOutlined } from '@ant-design/icons';
 const OrderManagement = () => {
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentOrderId, setCurrentOrderId] = useState(null);
+  const [reviewContent, setReviewContent] = useState('');
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewImages, setReviewImages] = useState([]);
+  
   const shop = () => {
     navigate("/");
   };
@@ -73,10 +80,88 @@ const OrderManagement = () => {
       );
       setOrders([...orders]);
       toast.success("Trạng thái đơn hàng đã được cập nhật thành Đã nhận hàng.");
+      showReviewModal(orderId);
     } catch (error) {
       console.error("Error updating order status:", error);
       alert("Cập nhật trạng thái đơn hàng thất bại.");
     }
+  };
+  
+
+  const showReviewModal = (orderId) => {
+    setCurrentOrderId(orderId);
+    setIsModalVisible(true);
+  };
+  
+  const handleOk = async () => {
+    if (currentOrderId) {
+      try {
+        // Gọi hàm thêm đánh giá từ service (bạn cần tạo service cho đánh giá)
+        const response = await ReviewService.addReview({
+          productId: currentOrderId,
+          userId: user.id,
+          content: reviewContent,
+          rating: reviewRating,
+          images: reviewImages
+        });
+        if (response.status === "OK") {
+          toast.success("Đánh giá đã được thêm thành công.");
+          setIsModalVisible(false);
+          setReviewContent('');
+          setReviewRating(0);
+          setReviewImages([]);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        console.error("Error adding review:", error);
+        toast.error("Thêm đánh giá thất bại.");
+      }
+    }
+  };
+  
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleImageUpload = ({ file, onSuccess, onError }) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setReviewImages([...reviewImages, reader.result]);
+      onSuccess();
+    };
+    reader.onerror = () => {
+      onError(new Error("Failed to upload image"));
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+  const handleImageRemove = (index) => {
+    setReviewImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  };
+  const uploadProps = {
+    customRequest: handleImageUpload,
+    multiple: true,
+    showUploadList: false,
+  };
+  const renderUploadedImages = () => {
+    return reviewImages.map((image, index) => (
+      <div key={index} style={{ display: 'inline-block', position: 'relative', marginRight: 10 }}>
+        <img
+          src={image}
+          alt={`review-image-${index}`}
+          style={{ width: 100, height: 100, objectFit: "cover" }}
+        />
+        <Button
+          type="link"
+          icon={<DeleteOutlined />}
+          onClick={() => handleImageRemove(index)}
+          style={{ position: 'absolute', top: 0, right: 0, color: 'red' }}
+        />
+      </div>
+      
+    ));
   };
 
   if (loading) {
@@ -357,6 +442,54 @@ const OrderManagement = () => {
             )}
           </div>
         </div>
+        <Modal
+          title="Đánh giá sản phẩm"
+          visible={isModalVisible}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          okText="Gửi đánh giá"
+          cancelText="Hủy"
+        >
+          <Form
+            name="reviewForm"
+            onFinish={handleOk}
+            initialValues={{ rating: reviewRating }}
+          >
+            <Form.Item
+              name="rating"
+              label="Xếp hạng"
+              rules={[{ required: true, message: 'Vui lòng chọn xếp hạng!' }]}
+            >
+              <Rate
+                onChange={setReviewRating}
+                value={reviewRating}
+              />
+            </Form.Item>
+            <Form.Item
+              name="content"
+              label="Nội dung"
+              rules={[{ required: true, message: 'Vui lòng nhập nội dung đánh giá!' }]}
+            >
+              <Input.TextArea
+                rows={4}
+                value={reviewContent}
+                onChange={(e) => setReviewContent(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item
+            label="Ảnh đánh giá"
+          >
+            <Upload
+              {...uploadProps}
+            >
+              <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+            </Upload>
+            <div style={{ marginTop: 10 }}>
+              {renderUploadedImages()}
+            </div>
+          </Form.Item>
+          </Form>
+        </Modal>
       </div>
     </div>
   );
